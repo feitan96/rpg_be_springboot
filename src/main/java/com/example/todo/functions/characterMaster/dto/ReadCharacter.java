@@ -1,11 +1,10 @@
 package com.example.todo.functions.characterMaster.dto;
 
-import lombok.Builder;
 import lombok.Data;
 import java.sql.Timestamp;
 
 @Data
-public class CharacterDTO {
+public class ReadCharacter {
     private Long id;
     private String name;
     private String description;

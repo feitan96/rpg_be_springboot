@@ -1,7 +1,5 @@
 package com.example.todo.functions.characterMaster.repository;
 
-import com.example.todo.functions.characterMaster.dto.CharacterDTO;
-import com.example.todo.functions.characterMaster.dto.CreateCharacter;
 import com.example.todo.functions.characterMaster.entity.GameCharacter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

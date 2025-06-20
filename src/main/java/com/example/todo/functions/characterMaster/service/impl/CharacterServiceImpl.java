@@ -1,6 +1,6 @@
 package com.example.todo.functions.characterMaster.service.impl;
 
-import com.example.todo.functions.characterMaster.dto.CharacterDTO;
+import com.example.todo.functions.characterMaster.dto.ReadCharacter;
 import com.example.todo.functions.characterMaster.dto.CreateCharacter;
 import com.example.todo.functions.characterMaster.dto.UpdateCharacter;
 import com.example.todo.functions.characterMaster.entity.GameCharacter;
@@ -29,7 +29,7 @@ public class CharacterServiceImpl implements CharacterService {
 
     // Find all characters that are not deleted
     @Override
-    public List<CharacterDTO> getAllCharacters(){
+    public List<ReadCharacter> getAllCharacters(){
         List<GameCharacter> characters = characterRepository.findByIsDeletedFalse();
         return characters.stream()
                 .map(this::convertToDTO)
@@ -38,7 +38,7 @@ public class CharacterServiceImpl implements CharacterService {
 
     // Find all characters that are not deleted with pagination
     @Override
-    public Page<CharacterDTO> getAllCharactersPaginated(int page, int size, String sortBy, String sortDirection) {
+    public Page<ReadCharacter> getAllCharactersPaginated(int page, int size, String sortBy, String sortDirection) {
         Sort sort = sortDirection.equalsIgnoreCase("desc") ?
                 Sort.by(sortBy).descending() :
                 Sort.by(sortBy).ascending();
@@ -49,9 +49,17 @@ public class CharacterServiceImpl implements CharacterService {
         return characterPage.map(this::convertToDTO);
     }
 
+    // Find a character by ID that is not deleted
+    @Override
+    public ReadCharacter getCharacterById(Long id) {
+        GameCharacter character = characterRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new RuntimeException("Character not found with id: " + id));
+        return convertToDTO(character);
+    }
+
     // Create a new character from CreateCharacter DTO
     @Override
-    public CharacterDTO createCharacter(CreateCharacter createRequest) {
+    public ReadCharacter createCharacter(CreateCharacter createRequest) {
         GameCharacter character = new GameCharacter();
         BeanUtils.copyProperties(createRequest, character);
         character.setIsDeleted(false);
@@ -62,7 +70,7 @@ public class CharacterServiceImpl implements CharacterService {
 
     // Update an existing character from UpdateCharacter DTO
     @Override
-    public CharacterDTO updateCharacter(Long id, UpdateCharacter updateRequest) {
+    public ReadCharacter updateCharacter(Long id, UpdateCharacter updateRequest) {
         GameCharacter existingCharacter = characterRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new RuntimeException("Character not found with id: " + id));
 
@@ -71,9 +79,26 @@ public class CharacterServiceImpl implements CharacterService {
         return convertToDTO(updatedCharacter);
     }
 
-    // Convert Character entity to CharacterDTO
-    public CharacterDTO convertToDTO(GameCharacter character) {
-        CharacterDTO dto = new CharacterDTO();
+    @Override
+    public void softDeleteCharacter(Long id) {
+        GameCharacter character = characterRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new RuntimeException("Character not found with id: " + id));
+        character.setIsDeleted(true);
+        characterRepository.save(character);
+    }
+
+    @Override
+    public void hardDeleteCharacter(Long id) {
+        if (characterRepository.existsById(id)) {
+            characterRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("Character not found with id: " + id);
+        }
+    }
+
+    // Convert Character entity to ReadCharacter DTO
+    public ReadCharacter convertToDTO(GameCharacter character) {
+        ReadCharacter dto = new ReadCharacter();
         BeanUtils.copyProperties(character, dto);
         return dto;
     }

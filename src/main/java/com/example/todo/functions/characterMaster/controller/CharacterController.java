@@ -1,7 +1,7 @@
 package com.example.todo.functions.characterMaster.controller;
 
 
-import com.example.todo.functions.characterMaster.dto.CharacterDTO;
+import com.example.todo.functions.characterMaster.dto.ReadCharacter;
 import com.example.todo.functions.characterMaster.dto.CreateCharacter;
 import com.example.todo.functions.characterMaster.dto.UpdateCharacter;
 import com.example.todo.functions.characterMaster.service.CharacterService;
@@ -27,36 +27,50 @@ public class CharacterController {
     // Endpoint to retrieve all characters
     //try catch to be added later
     @GetMapping
-    public ResponseEntity<List<CharacterDTO>> getAllCharacters() {
-        List<CharacterDTO> characters = characterService.getAllCharacters();
+    public ResponseEntity<List<ReadCharacter>> getAllCharacters() {
+        List<ReadCharacter> characters = characterService.getAllCharacters();
         return new  ResponseEntity<>(characters, HttpStatus.OK);
     }
 
     // Endpoint to retrieve all characters with pagination
     //try catch to be added later
     @GetMapping("/paginated")
-    public ResponseEntity<Page<CharacterDTO>> getAllCharactersPaginated(
+    public ResponseEntity<Page<ReadCharacter>> getAllCharactersPaginated(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDirection) {
-        Page<CharacterDTO> characterPage = characterService.getAllCharactersPaginated(page, size, sortBy, sortDirection);
+        Page<ReadCharacter> characterPage = characterService.getAllCharactersPaginated(page, size, sortBy, sortDirection);
         return new ResponseEntity<>(characterPage, HttpStatus.OK);
+    }
+
+    // Endpoint to retrieve a character by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<ReadCharacter> getCharacterById(@PathVariable Long id) {
+        try {
+            ReadCharacter character = characterService.getCharacterById(id);
+            return new ResponseEntity<>(character, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            // Handle the exception and return an appropriate response
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Endpoint to create a new character
     //try catch to be added later
     @PostMapping
-    public ResponseEntity<CharacterDTO> createCharacter(@RequestBody CreateCharacter createRequest) {
-        CharacterDTO createdCharacter = characterService.createCharacter(createRequest);
+    public ResponseEntity<ReadCharacter> createCharacter(@RequestBody CreateCharacter createRequest) {
+        ReadCharacter createdCharacter = characterService.createCharacter(createRequest);
         return new ResponseEntity<>(createdCharacter, HttpStatus.CREATED);
     }
 
     // Endpoint to update an existing character
     @PutMapping("/{id}")
-    public ResponseEntity<CharacterDTO> updateCharacter(@PathVariable Long id, @RequestBody UpdateCharacter updateRequest) {
+    public ResponseEntity<ReadCharacter> updateCharacter(@PathVariable Long id, @RequestBody UpdateCharacter updateRequest) {
         try {
-            CharacterDTO updatedCharacter = characterService.updateCharacter(id, updateRequest);
+            ReadCharacter updatedCharacter = characterService.updateCharacter(id, updateRequest);
             return new ResponseEntity<>(updatedCharacter, HttpStatus.OK);
         } catch (RuntimeException e) {
             // Handle the exception and return an appropriate response
@@ -65,4 +79,33 @@ public class CharacterController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    // Endpoint to soft delete a character
+    @PatchMapping("/{id}/soft-delete")
+    public ResponseEntity<?> softDeleteCharacter(@PathVariable Long id) {
+        try {
+            characterService.softDeleteCharacter(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (RuntimeException e) {
+            // Handle the exception and return an appropriate response
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Endpoint to hard delete a character
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> hardDeleteCharacter(@PathVariable Long id) {
+        try {
+            characterService.hardDeleteCharacter(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (RuntimeException e) {
+            // Handle the exception and return an appropriate response
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

@@ -2,6 +2,7 @@ package com.example.todo.functions.characterMaster.service.impl;
 
 import com.example.todo.functions.characterMaster.dto.CharacterDTO;
 import com.example.todo.functions.characterMaster.dto.CreateCharacter;
+import com.example.todo.functions.characterMaster.dto.UpdateCharacter;
 import com.example.todo.functions.characterMaster.entity.GameCharacter;
 import com.example.todo.functions.characterMaster.service.CharacterService;
 import org.springframework.beans.BeanUtils;
@@ -57,6 +58,17 @@ public class CharacterServiceImpl implements CharacterService {
 
         GameCharacter savedCharacter = characterRepository.save(character);
         return convertToDTO(savedCharacter);
+    }
+
+    // Update an existing character from UpdateCharacter DTO
+    @Override
+    public CharacterDTO updateCharacter(Long id, UpdateCharacter updateRequest) {
+        GameCharacter existingCharacter = characterRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new RuntimeException("Character not found with id: " + id));
+
+        BeanUtils.copyProperties(updateRequest, existingCharacter, "id", "isDeleted");
+        GameCharacter updatedCharacter = characterRepository.save(existingCharacter);
+        return convertToDTO(updatedCharacter);
     }
 
     // Convert Character entity to CharacterDTO

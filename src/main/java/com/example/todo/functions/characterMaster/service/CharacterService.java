@@ -2,6 +2,7 @@ package com.example.todo.functions.characterMaster.service;
 
 import com.example.todo.functions.characterMaster.dto.CharacterDTO;
 import com.example.todo.functions.characterMaster.dto.CreateCharacter;
+import com.example.todo.functions.characterMaster.dto.UpdateCharacter;
 import com.example.todo.functions.characterMaster.entity.GameCharacter;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -23,4 +24,7 @@ public interface CharacterService {
 
     // Create a new character from CreateCharacter DTO
     CharacterDTO createCharacter(CreateCharacter createRequest);
+
+    // Update an existing character from UpdateCharacter DTO
+    CharacterDTO updateCharacter(Long id, UpdateCharacter updateRequest);
 }

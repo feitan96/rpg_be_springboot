@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CharacterRepository extends JpaRepository<GameCharacter, Long> {
@@ -19,4 +20,7 @@ public interface CharacterRepository extends JpaRepository<GameCharacter, Long> 
 
     // Find all characters that are not deleted with pagination
     Page<GameCharacter> findByIsDeletedFalse(Pageable pageable);
+
+    // Find a character by ID that is not deleted
+    Optional<GameCharacter> findByIdAndIsDeletedFalse(Long id);
 }

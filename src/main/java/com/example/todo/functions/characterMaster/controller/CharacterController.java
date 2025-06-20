@@ -28,8 +28,13 @@ public class CharacterController {
     //try catch to be added later
     @GetMapping
     public ResponseEntity<List<ReadCharacter>> getAllCharacters() {
-        List<ReadCharacter> characters = characterService.getAllCharacters();
-        return new  ResponseEntity<>(characters, HttpStatus.OK);
+        try {
+            List<ReadCharacter> characters = characterService.getAllCharacters();
+            return new  ResponseEntity<>(characters, HttpStatus.OK);
+        } catch (Exception e) {
+            // Handle the exception and return an appropriate response
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     // Endpoint to retrieve all characters with pagination

@@ -2,15 +2,13 @@ package com.example.todo.functions.characterMaster.controller;
 
 
 import com.example.todo.functions.characterMaster.dto.CharacterDTO;
+import com.example.todo.functions.characterMaster.dto.CreateCharacter;
 import com.example.todo.functions.characterMaster.service.CharacterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,7 +30,7 @@ public class CharacterController {
         return new  ResponseEntity<>(characters, HttpStatus.OK);
     }
 
-
+    // Endpoint to retrieve all characters with pagination
     @GetMapping("/paginated")
     public ResponseEntity<Page<CharacterDTO>> getAllCharactersPaginated(
             @RequestParam(defaultValue = "0") int page,
@@ -41,5 +39,12 @@ public class CharacterController {
             @RequestParam(defaultValue = "asc") String sortDirection) {
         Page<CharacterDTO> characterPage = characterService.getAllCharactersPaginated(page, size, sortBy, sortDirection);
         return new ResponseEntity<>(characterPage, HttpStatus.OK);
+    }
+
+    // Endpoint to create a new character
+    @PostMapping
+    public ResponseEntity<CharacterDTO> createCharacter(@RequestBody CreateCharacter createRequest) {
+        CharacterDTO createdCharacter = characterService.createCharacter(createRequest);
+        return new ResponseEntity<>(createdCharacter, HttpStatus.CREATED);
     }
 }

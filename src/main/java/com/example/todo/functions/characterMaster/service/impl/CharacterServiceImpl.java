@@ -1,6 +1,7 @@
 package com.example.todo.functions.characterMaster.service.impl;
 
 import com.example.todo.functions.characterMaster.dto.CharacterDTO;
+import com.example.todo.functions.characterMaster.dto.CreateCharacter;
 import com.example.todo.functions.characterMaster.entity.GameCharacter;
 import com.example.todo.functions.characterMaster.service.CharacterService;
 import org.springframework.beans.BeanUtils;
@@ -47,8 +48,18 @@ public class CharacterServiceImpl implements CharacterService {
         return characterPage.map(this::convertToDTO);
     }
 
-    // Convert Character entity to CharacterDTO
+    // Create a new character from CreateCharacter DTO
     @Override
+    public CharacterDTO createCharacter(CreateCharacter createRequest) {
+        GameCharacter character = new GameCharacter();
+        BeanUtils.copyProperties(createRequest, character);
+        character.setIsDeleted(false);
+
+        GameCharacter savedCharacter = characterRepository.save(character);
+        return convertToDTO(savedCharacter);
+    }
+
+    // Convert Character entity to CharacterDTO
     public CharacterDTO convertToDTO(GameCharacter character) {
         CharacterDTO dto = new CharacterDTO();
         BeanUtils.copyProperties(character, dto);

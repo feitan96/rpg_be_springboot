@@ -1,12 +1,18 @@
 package com.example.todo.functions.characterMaster.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 public class CreateCharacter {
+
+    @NotBlank(message = "Name is required")
     private String name;
-    private String description;
+
+    @NotBlank(message = "Type is required")
     private String type;
+
+    private String description;
     private String classification;
     private String spritePath;
 

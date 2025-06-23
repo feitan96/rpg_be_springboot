@@ -71,6 +71,26 @@ public class CharacterController {
         return new ResponseEntity<>(createdCharacter, HttpStatus.CREATED);
     }
 
+    @PostMapping("/hero")
+    public ResponseEntity<ReadCharacter> createHero(@RequestBody CreateCharacter createRequest) {
+        try {
+            ReadCharacter createdCharacter = characterService.createHero(createRequest);
+            return new ResponseEntity<>(createdCharacter, HttpStatus.CREATED);
+        } catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/villain")
+    public ResponseEntity<ReadCharacter> createVillain(@RequestBody CreateCharacter createRequest) {
+        try {
+            ReadCharacter createdCharacter = characterService.createVillain(createRequest);
+            return new ResponseEntity<>(createdCharacter, HttpStatus.CREATED);
+        } catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     // Endpoint to update an existing character
     @PutMapping("/{id}")
     public ResponseEntity<ReadCharacter> updateCharacter(@PathVariable Long id, @RequestBody UpdateCharacter updateRequest) {

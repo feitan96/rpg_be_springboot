@@ -1,5 +1,6 @@
 package com.example.todo.functions.characterMaster.dto;
 
+import com.example.todo.functions.characterMaster.enums.CharacterType;
 import lombok.Data;
 import java.sql.Timestamp;
 
@@ -8,7 +9,7 @@ public class ReadCharacter {
     private Long id;
     private String name;
     private String description;
-    private String type;
+    private CharacterType type;
     private String classification;
     private String spritePath;
 

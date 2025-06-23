@@ -28,6 +28,12 @@ public interface CharacterService {
     // Create a new character from CreateCharacter DTO
     ReadCharacter createCharacter(CreateCharacter createRequest);
 
+    // Create a hero or villain character from CreateCharacter DTO
+    ReadCharacter createHero(CreateCharacter createRequest);
+
+    // Create a villain character from CreateCharacter DTO
+    ReadCharacter createVillain(CreateCharacter createRequest);
+
     // Update an existing character from UpdateCharacter DTO
     ReadCharacter updateCharacter(Long id, UpdateCharacter updateRequest);
 

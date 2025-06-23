@@ -4,6 +4,7 @@ import com.example.todo.functions.characterMaster.dto.ReadCharacter;
 import com.example.todo.functions.characterMaster.dto.CreateCharacter;
 import com.example.todo.functions.characterMaster.dto.UpdateCharacter;
 import com.example.todo.functions.characterMaster.entity.GameCharacter;
+import com.example.todo.functions.characterMaster.enums.CharacterType;
 import com.example.todo.functions.characterMaster.service.CharacterService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,10 +63,30 @@ public class CharacterServiceImpl implements CharacterService {
     public ReadCharacter createCharacter(CreateCharacter createRequest) {
         GameCharacter character = new GameCharacter();
         BeanUtils.copyProperties(createRequest, character);
+
+        //set to type == "NPC" if type is not specified
+        if (character.getType() == null) {
+            character.setType(CharacterType.NPC);
+        }
+
         character.setIsDeleted(false);
 
         GameCharacter savedCharacter = characterRepository.save(character);
         return convertToDTO(savedCharacter);
+    }
+
+    // Create a hero character from CreateCharacter DTO
+    @Override
+    public ReadCharacter createHero(CreateCharacter createRequest) {
+        createRequest.setType(CharacterType.HERO);
+        return createCharacter(createRequest);
+    }
+
+    // Create a villain character from CreateCharacter DTO
+    @Override
+    public ReadCharacter createVillain(CreateCharacter createRequest) {
+        createRequest.setType(CharacterType.VILLAIN);
+        return createCharacter(createRequest);
     }
 
     // Update an existing character from UpdateCharacter DTO
@@ -79,6 +100,7 @@ public class CharacterServiceImpl implements CharacterService {
         return convertToDTO(updatedCharacter);
     }
 
+    // Soft delete a character by ID
     @Override
     public void softDeleteCharacter(Long id) {
         GameCharacter character = characterRepository.findByIdAndIsDeletedFalse(id)
@@ -87,6 +109,8 @@ public class CharacterServiceImpl implements CharacterService {
         characterRepository.save(character);
     }
 
+
+    // Hard delete a character by ID
     @Override
     public void hardDeleteCharacter(Long id) {
         if (characterRepository.existsById(id)) {

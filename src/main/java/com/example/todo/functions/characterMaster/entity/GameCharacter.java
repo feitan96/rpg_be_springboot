@@ -1,11 +1,14 @@
 package com.example.todo.functions.characterMaster.entity;
 
+import com.example.todo.functions.characterMaster.enums.CharacterType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -28,7 +31,8 @@ public class GameCharacter {
     private String description;
 
     @Column(nullable = false, length = 50)
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private CharacterType type;
 
     @Column(length = 50)
     private String classification;

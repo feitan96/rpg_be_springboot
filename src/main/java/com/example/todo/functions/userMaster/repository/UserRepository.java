@@ -1,4 +1,4 @@
-package com.example.todo.functions.userCrud.repository;
+package com.example.todo.functions.userMaster.repository;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-import com.example.todo.functions.userCrud.entity.User;
+import com.example.todo.functions.userMaster.entity.User;
 
 public interface  UserRepository extends JpaRepository<User, String> {
     

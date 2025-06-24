@@ -5,12 +5,16 @@ import com.example.todo.functions.characterMaster.dto.ReadCharacter;
 import com.example.todo.functions.characterMaster.dto.CreateCharacter;
 import com.example.todo.functions.characterMaster.dto.UpdateCharacter;
 import com.example.todo.functions.characterMaster.service.CharacterService;
+import com.example.todo.functions.characterMaster.dto.FilterCharacter;
+import com.example.todo.functions.characterMaster.enums.CharacterType;
+import com.example.todo.functions.characterMaster.enums.CharacterClassification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -25,14 +29,12 @@ public class CharacterController {
     }
 
     // Endpoint to retrieve all characters
-    //try catch to be added later
     @GetMapping
     public ResponseEntity<List<ReadCharacter>> getAllCharacters() {
         try {
             List<ReadCharacter> characters = characterService.getAllCharacters();
             return new  ResponseEntity<>(characters, HttpStatus.OK);
         } catch (Exception e) {
-            // Handle the exception and return an appropriate response
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -49,6 +51,46 @@ public class CharacterController {
         return new ResponseEntity<>(characterPage, HttpStatus.OK);
     }
 
+    // Endpoint for advanced search and filtering
+    @GetMapping("/search")
+    public ResponseEntity<Page<ReadCharacter>> searchAndFilterCharacters(
+            @RequestParam(required = false) String searchTerm,
+            @ModelAttribute FilterCharacter filter,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDirection) {
+        try {
+            Page<ReadCharacter> characterPage = characterService.searchAndFilterCharacters(
+                    searchTerm, filter, page, size, sortBy, sortDirection);
+            return new ResponseEntity<>(characterPage, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Endpoint to get all character types for filtering
+    @GetMapping("/types")
+    public ResponseEntity<List<CharacterType>> getAllCharacterTypes() {
+        try {
+            List<CharacterType> types = Arrays.asList(CharacterType.values());
+            return new ResponseEntity<>(types, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Endpoint to get all character classifications for filtering
+    @GetMapping("/classifications")
+    public ResponseEntity<List<CharacterClassification>> getAllCharacterClassifications() {
+        try {
+            List<CharacterClassification> classifications = Arrays.asList(CharacterClassification.values());
+            return new ResponseEntity<>(classifications, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     // Endpoint to retrieve a character by ID
     @GetMapping("/{id}")
     public ResponseEntity<ReadCharacter> getCharacterById(@PathVariable Long id) {
@@ -56,7 +98,6 @@ public class CharacterController {
             ReadCharacter character = characterService.getCharacterById(id);
             return new ResponseEntity<>(character, HttpStatus.OK);
         } catch (RuntimeException e) {
-            // Handle the exception and return an appropriate response
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -98,7 +139,6 @@ public class CharacterController {
             ReadCharacter updatedCharacter = characterService.updateCharacter(id, updateRequest);
             return new ResponseEntity<>(updatedCharacter, HttpStatus.OK);
         } catch (RuntimeException e) {
-            // Handle the exception and return an appropriate response
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -112,7 +152,6 @@ public class CharacterController {
             characterService.softDeleteCharacter(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (RuntimeException e) {
-            // Handle the exception and return an appropriate response
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -126,7 +165,6 @@ public class CharacterController {
             characterService.hardDeleteCharacter(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (RuntimeException e) {
-            // Handle the exception and return an appropriate response
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

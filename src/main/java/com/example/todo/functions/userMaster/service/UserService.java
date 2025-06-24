@@ -1,4 +1,4 @@
-package com.example.todo.functions.userCrud.service;
+package com.example.todo.functions.userMaster.service;
 
 import java.util.List;
 
@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.todo.functions.userCrud.entity.User;
-import com.example.todo.functions.userCrud.repository.UserRepository;
+import com.example.todo.functions.userMaster.entity.User;
+import com.example.todo.functions.userMaster.repository.UserRepository;
 
 @Service
 @Transactional

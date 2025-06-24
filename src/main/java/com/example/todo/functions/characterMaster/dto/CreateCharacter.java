@@ -1,5 +1,6 @@
 package com.example.todo.functions.characterMaster.dto;
 
+import com.example.todo.functions.characterMaster.enums.CharacterClassification;
 import com.example.todo.functions.characterMaster.enums.CharacterType;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -7,10 +8,11 @@ import lombok.Data;
 @Data
 public class CreateCharacter {
 
-    private String name;
     private CharacterType type;
+    private CharacterClassification classification;
+
+    private String name;
     private String description;
-    private String classification;
     private String spritePath;
 
     private Integer baseHealth = 100;

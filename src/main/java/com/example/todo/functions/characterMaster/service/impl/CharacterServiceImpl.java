@@ -1,17 +1,20 @@
 package com.example.todo.functions.characterMaster.service.impl;
 
+import com.example.todo.functions.characterMaster.dto.FilterCharacter;
 import com.example.todo.functions.characterMaster.dto.ReadCharacter;
 import com.example.todo.functions.characterMaster.dto.CreateCharacter;
 import com.example.todo.functions.characterMaster.dto.UpdateCharacter;
 import com.example.todo.functions.characterMaster.entity.GameCharacter;
 import com.example.todo.functions.characterMaster.enums.CharacterType;
 import com.example.todo.functions.characterMaster.service.CharacterService;
+import com.example.todo.functions.characterMaster.specification.CharacterSpecification;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import com.example.todo.functions.characterMaster.repository.CharacterRepository;
 
@@ -49,6 +52,26 @@ public class CharacterServiceImpl implements CharacterService {
 
         return characterPage.map(this::convertToDTO);
     }
+
+    // Find all characters with search, filter and pagination
+    @Override
+    public Page<ReadCharacter> searchAndFilterCharacters(String searchTerm, FilterCharacter filter, int page, int size, String sortBy, String sortDirection) {
+        Sort sort = sortDirection.equalsIgnoreCase("desc") ?
+                Sort.by(sortBy).descending() :
+                Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        if (filter == null) {
+            filter = new FilterCharacter();
+        }
+
+        Specification<GameCharacter> spec = CharacterSpecification.getFilteredCharacters(filter, searchTerm);
+        Page<GameCharacter> characterPage = characterRepository.findAll(spec, pageable);
+
+        return characterPage.map(this::convertToDTO);
+    }
+
 
     // Find a character by ID that is not deleted
     @Override

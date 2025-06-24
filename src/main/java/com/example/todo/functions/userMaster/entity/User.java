@@ -1,4 +1,4 @@
-package com.example.todo.functions.userCrud.entity;
+package com.example.todo.functions.userMaster.entity;
 
 import java.sql.Timestamp;
 

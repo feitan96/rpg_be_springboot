@@ -1,5 +1,6 @@
 package com.example.todo.functions.characterMaster.entity;
 
+import com.example.todo.functions.characterMaster.enums.CharacterClassification;
 import com.example.todo.functions.characterMaster.enums.CharacterType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Column;
@@ -34,8 +35,9 @@ public class GameCharacter {
     @Enumerated(EnumType.STRING)
     private CharacterType type;
 
-    @Column(length = 50)
-    private String classification;
+    @Column(nullable = false, length = 50)
+    @Enumerated(EnumType.STRING)
+    private CharacterClassification classification;
 
     @Column(name = "sprite_path", length = 255)
     private String spritePath;

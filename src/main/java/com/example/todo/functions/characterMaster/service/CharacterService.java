@@ -1,5 +1,6 @@
 package com.example.todo.functions.characterMaster.service;
 
+import com.example.todo.functions.characterMaster.dto.FilterCharacter;
 import com.example.todo.functions.characterMaster.dto.ReadCharacter;
 import com.example.todo.functions.characterMaster.dto.CreateCharacter;
 import com.example.todo.functions.characterMaster.dto.UpdateCharacter;
@@ -13,6 +14,9 @@ import java.util.List;
 @Service
 public interface CharacterService {
 
+    // Convert GameCharacter entity to ReadCharacter DTO
+    ReadCharacter convertToDTO(GameCharacter character);
+
     // Find all characters that are not deleted
     List<ReadCharacter> getAllCharacters();
 
@@ -22,8 +26,8 @@ public interface CharacterService {
     // Find all characters that are not deleted with pagination
     Page<ReadCharacter> getAllCharactersPaginated(int page, int size, String sortBy, String sortDirection);
 
-    // Convert GameCharacter entity to ReadCharacter DTO
-    ReadCharacter convertToDTO(GameCharacter character);
+    // Find all characters with search, filter and pagination
+    Page<ReadCharacter> searchAndFilterCharacters(String searchTerm, FilterCharacter filter, int page, int size, String sortBy, String sortDirection);
 
     // Create a new character from CreateCharacter DTO
     ReadCharacter createCharacter(CreateCharacter createRequest);

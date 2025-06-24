@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
@@ -128,6 +129,21 @@ public class CharacterController {
             ReadCharacter createdCharacter = characterService.createVillain(createRequest);
             return new ResponseEntity<>(createdCharacter, HttpStatus.CREATED);
         } catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Endpoint to update a character's sprite image
+    @PostMapping("/{id}/sprite")
+    public ResponseEntity<ReadCharacter> updateCharacterSprite(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) {
+        try {
+            ReadCharacter updatedCharacter = characterService.updateCharacterSprite(id, file);
+            return new ResponseEntity<>(updatedCharacter, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

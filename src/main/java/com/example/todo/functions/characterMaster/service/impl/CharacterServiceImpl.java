@@ -1,5 +1,6 @@
 package com.example.todo.functions.characterMaster.service.impl;
 
+import com.example.todo.common.service.FileStorageService;
 import com.example.todo.functions.characterMaster.dto.FilterCharacter;
 import com.example.todo.functions.characterMaster.dto.ReadCharacter;
 import com.example.todo.functions.characterMaster.dto.CreateCharacter;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import com.example.todo.functions.characterMaster.repository.CharacterRepository;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,10 +27,12 @@ import java.util.stream.Collectors;
 public class CharacterServiceImpl implements CharacterService {
 
     private final CharacterRepository characterRepository;
+    private final FileStorageService fileStorageService;
 
     @Autowired
-    public CharacterServiceImpl(CharacterRepository characterRepository) {
+    public CharacterServiceImpl(CharacterRepository characterRepository, FileStorageService fileStorageService) {
         this.characterRepository = characterRepository;
+        this.fileStorageService = fileStorageService;
     }
 
     // Find all characters that are not deleted
@@ -120,6 +124,31 @@ public class CharacterServiceImpl implements CharacterService {
 
         BeanUtils.copyProperties(updateRequest, existingCharacter, "id", "isDeleted");
         GameCharacter updatedCharacter = characterRepository.save(existingCharacter);
+        return convertToDTO(updatedCharacter);
+    }
+
+    // Update a character's sprite image
+    @Override
+    public ReadCharacter updateCharacterSprite(Long id, MultipartFile file) {
+        GameCharacter character = characterRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new RuntimeException("Character not found with id: " + id));
+
+        // Delete old sprite if exists
+        if (character.getSpritePath() != null && !character.getSpritePath().isEmpty()) {
+            // Extract just the filename from the full path
+            String oldFileName = character.getSpritePath().substring(
+                    character.getSpritePath().lastIndexOf("/") + 1);
+            fileStorageService.deleteFile(oldFileName);
+        }
+
+        // Store the new file
+        String fileName = fileStorageService.storeFile(file);
+
+        // Create URL path for the sprite
+        String fileUrl = "/uploads/" + fileName;
+        character.setSpritePath(fileUrl);
+
+        GameCharacter updatedCharacter = characterRepository.save(character);
         return convertToDTO(updatedCharacter);
     }
 

@@ -9,8 +9,20 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Specification class for filtering GameCharacter entities based on various criteria.
+ * This class provides a method to create a Specification that can be used with JPA repositories
+ * to filter characters based on type, classification, base stats, and search terms.
+ */
 public class CharacterSpecification {
 
+    /**
+     * Creates a Specification for filtering GameCharacter entities.
+     *
+     * @param filter The filter criteria containing type, classification, and base stats ranges.
+     * @param searchTerm The search term to filter characters by name.
+     * @return A Specification that can be used to filter GameCharacter entities.
+     */
     public static Specification<GameCharacter> getFilteredCharacters(FilterCharacter filter, String searchTerm) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();

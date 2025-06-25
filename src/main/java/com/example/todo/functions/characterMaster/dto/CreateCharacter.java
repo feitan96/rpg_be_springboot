@@ -5,6 +5,10 @@ import com.example.todo.functions.characterMaster.enums.CharacterType;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+/**
+ * DTO for creating a new character.
+ * This class is used to transfer data from the client to the server when creating a new character.
+ */
 @Data
 public class CreateCharacter {
 

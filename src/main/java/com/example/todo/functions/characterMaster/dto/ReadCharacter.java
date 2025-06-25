@@ -5,6 +5,10 @@ import com.example.todo.functions.characterMaster.enums.CharacterType;
 import lombok.Data;
 import java.sql.Timestamp;
 
+/**
+ * DTO for reading character details.
+ * This class is used to transfer character data from the server to the client.
+ */
 @Data
 public class ReadCharacter {
     private Long id;

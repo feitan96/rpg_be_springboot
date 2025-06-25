@@ -16,6 +16,10 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.sql.Timestamp;
 
+/**
+ * Entity representing a game character.
+ * This class maps to the 'character_classes' table in the database.
+ */
 @Entity
 @Data
 @Table(name = "character_classes")

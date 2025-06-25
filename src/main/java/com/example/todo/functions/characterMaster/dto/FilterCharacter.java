@@ -4,6 +4,10 @@ import com.example.todo.functions.characterMaster.enums.CharacterClassification;
 import com.example.todo.functions.characterMaster.enums.CharacterType;
 import lombok.Data;
 
+/**
+ * DTO for filtering characters based on various attributes.
+ * This class is used to transfer filter criteria from the client to the server.
+ */
 @Data
 public class FilterCharacter {
 

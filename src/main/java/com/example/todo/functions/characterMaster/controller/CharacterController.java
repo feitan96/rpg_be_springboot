@@ -45,12 +45,8 @@ public class CharacterController {
      */
     @GetMapping
     public ResponseEntity<List<ReadCharacter>> getAllCharacters() {
-        try {
-            List<ReadCharacter> characters = characterService.getAllCharacters();
-            return new  ResponseEntity<>(characters, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        List<ReadCharacter> characters = characterService.getAllCharacters();
+        return new  ResponseEntity<>(characters, HttpStatus.OK);
     }
 
     /**
@@ -91,13 +87,9 @@ public class CharacterController {
             @RequestParam(defaultValue = "12") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDirection) {
-        try {
-            Page<ReadCharacter> characterPage = characterService.searchAndFilterCharacters(
-                    searchTerm, filter, page, size, sortBy, sortDirection);
-            return new ResponseEntity<>(characterPage, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        Page<ReadCharacter> characterPage = characterService.searchAndFilterCharacters(
+                searchTerm, filter, page, size, sortBy, sortDirection);
+        return new ResponseEntity<>(characterPage, HttpStatus.OK);
     }
 
     /**
@@ -107,12 +99,8 @@ public class CharacterController {
      */
     @GetMapping("/types")
     public ResponseEntity<List<CharacterType>> getAllCharacterTypes() {
-        try {
-            List<CharacterType> types = Arrays.asList(CharacterType.values());
-            return new ResponseEntity<>(types, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        List<CharacterType> types = Arrays.asList(CharacterType.values());
+        return new ResponseEntity<>(types, HttpStatus.OK);
     }
 
     /**
@@ -122,12 +110,8 @@ public class CharacterController {
      */
     @GetMapping("/classifications")
     public ResponseEntity<List<CharacterClassification>> getAllCharacterClassifications() {
-        try {
-            List<CharacterClassification> classifications = Arrays.asList(CharacterClassification.values());
-            return new ResponseEntity<>(classifications, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        List<CharacterClassification> classifications = Arrays.asList(CharacterClassification.values());
+        return new ResponseEntity<>(classifications, HttpStatus.OK);
     }
 
     /**
@@ -138,14 +122,8 @@ public class CharacterController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ReadCharacter> getCharacterById(@PathVariable Long id) {
-        try {
-            ReadCharacter character = characterService.getCharacterById(id);
-            return new ResponseEntity<>(character, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        ReadCharacter character = characterService.getCharacterById(id);
+        return new ResponseEntity<>(character, HttpStatus.OK);
     }
 
     /**
@@ -168,12 +146,8 @@ public class CharacterController {
      */
     @PostMapping("/hero")
     public ResponseEntity<ReadCharacter> createHero(@RequestBody CreateCharacter createRequest) {
-        try {
-            ReadCharacter createdCharacter = characterService.createHero(createRequest);
-            return new ResponseEntity<>(createdCharacter, HttpStatus.CREATED);
-        } catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        ReadCharacter createdCharacter = characterService.createHero(createRequest);
+        return new ResponseEntity<>(createdCharacter, HttpStatus.CREATED);
     }
 
     /**
@@ -184,12 +158,8 @@ public class CharacterController {
      */
     @PostMapping("/villain")
     public ResponseEntity<ReadCharacter> createVillain(@RequestBody CreateCharacter createRequest) {
-        try {
-            ReadCharacter createdCharacter = characterService.createVillain(createRequest);
-            return new ResponseEntity<>(createdCharacter, HttpStatus.CREATED);
-        } catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        ReadCharacter createdCharacter = characterService.createVillain(createRequest);
+        return new ResponseEntity<>(createdCharacter, HttpStatus.CREATED);
     }
 
     /**
@@ -203,14 +173,8 @@ public class CharacterController {
     public ResponseEntity<ReadCharacter> updateCharacterSprite(
             @PathVariable Long id,
             @RequestParam("file") MultipartFile file) {
-        try {
-            ReadCharacter updatedCharacter = characterService.updateCharacterSprite(id, file);
-            return new ResponseEntity<>(updatedCharacter, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        ReadCharacter updatedCharacter = characterService.updateCharacterSprite(id, file);
+        return new ResponseEntity<>(updatedCharacter, HttpStatus.OK);
     }
 
     /**
@@ -222,32 +186,20 @@ public class CharacterController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<ReadCharacter> updateCharacter(@PathVariable Long id, @RequestBody UpdateCharacter updateRequest) {
-        try {
-            ReadCharacter updatedCharacter = characterService.updateCharacter(id, updateRequest);
-            return new ResponseEntity<>(updatedCharacter, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        ReadCharacter updatedCharacter = characterService.updateCharacter(id, updateRequest);
+        return new ResponseEntity<>(updatedCharacter, HttpStatus.OK);
     }
 
     /**
-     * Softly deletes a character (marks as deleted without removing from database).
+     * Softly deletes a character (marks as deleted without removing from a database).
      *
      * @param id the character ID
      * @return ResponseEntity with status indicating success or failure
      */
     @PatchMapping("/{id}/soft-delete")
     public ResponseEntity<?> softDeleteCharacter(@PathVariable Long id) {
-        try {
-            characterService.softDeleteCharacter(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        characterService.softDeleteCharacter(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -258,14 +210,8 @@ public class CharacterController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> hardDeleteCharacter(@PathVariable Long id) {
-        try {
-            characterService.hardDeleteCharacter(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        characterService.hardDeleteCharacter(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

@@ -20,6 +20,9 @@ import org.springframework.stereotype.Service;
 import com.example.todo.functions.characterMaster.repository.CharacterRepository;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.todo.common.exception.ResourceNotFoundException;
+import com.example.todo.common.exception.InvalidRequestException;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,7 +84,7 @@ public class CharacterServiceImpl implements CharacterService {
     @Override
     public ReadCharacter getCharacterById(Long id) {
         GameCharacter character = characterRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new RuntimeException("Character not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Character", id));
         return convertToDTO(character);
     }
 
@@ -120,7 +123,7 @@ public class CharacterServiceImpl implements CharacterService {
     @Override
     public ReadCharacter updateCharacter(Long id, UpdateCharacter updateRequest) {
         GameCharacter existingCharacter = characterRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new RuntimeException("Character not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Character", id));
 
         BeanUtils.copyProperties(updateRequest, existingCharacter, "id", "isDeleted");
         GameCharacter updatedCharacter = characterRepository.save(existingCharacter);
@@ -131,7 +134,11 @@ public class CharacterServiceImpl implements CharacterService {
     @Override
     public ReadCharacter updateCharacterSprite(Long id, MultipartFile file) {
         GameCharacter character = characterRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new RuntimeException("Character not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Character", id));
+
+        if (file == null || file.isEmpty()) {
+            throw new InvalidRequestException("Sprite file cannot be empty");
+        }
 
         // Delete old sprite if exists
         if (character.getSpritePath() != null && !character.getSpritePath().isEmpty()) {
@@ -156,7 +163,7 @@ public class CharacterServiceImpl implements CharacterService {
     @Override
     public void softDeleteCharacter(Long id) {
         GameCharacter character = characterRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new RuntimeException("Character not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Character", id));
         character.setIsDeleted(true);
         characterRepository.save(character);
     }
@@ -168,7 +175,7 @@ public class CharacterServiceImpl implements CharacterService {
         if (characterRepository.existsById(id)) {
             characterRepository.deleteById(id);
         } else {
-            throw new RuntimeException("Character not found with id: " + id);
+            throw new ResourceNotFoundException("Character", id);
         }
     }
 

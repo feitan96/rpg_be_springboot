@@ -26,19 +26,33 @@ import com.example.todo.common.exception.InvalidRequestException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of the CharacterService interface that provides operations
+ * for managing game characters including creation, retrieval, update, and deletion.
+ */
 @Service
 public class CharacterServiceImpl implements CharacterService {
 
     private final CharacterRepository characterRepository;
     private final FileStorageService fileStorageService;
 
+    /**
+     * Constructs a CharacterServiceImpl with required dependencies.
+     *
+     * @param characterRepository repository for character data operations
+     * @param fileStorageService service for handling file storage operations
+     */
     @Autowired
     public CharacterServiceImpl(CharacterRepository characterRepository, FileStorageService fileStorageService) {
         this.characterRepository = characterRepository;
         this.fileStorageService = fileStorageService;
     }
 
-    // Find all characters that are not deleted
+    /**
+     * Retrieves all non-deleted characters from the database.
+     *
+     * @return list of characters converted to DTOs
+     */
     @Override
     public List<ReadCharacter> getAllCharacters(){
         List<GameCharacter> characters = characterRepository.findByIsDeletedFalse();
@@ -47,7 +61,15 @@ public class CharacterServiceImpl implements CharacterService {
                 .collect(Collectors.toList());
     }
 
-    // Find all characters that are not deleted with pagination
+    /**
+     * Retrieves all non-deleted characters with pagination support.
+     *
+     * @param page zero-based page index
+     * @param size size of the page to be returned
+     * @param sortBy field to sort by
+     * @param sortDirection direction of sort ("asc" or "desc")
+     * @return paginated list of characters converted to DTOs
+     */
     @Override
     public Page<ReadCharacter> getAllCharactersPaginated(int page, int size, String sortBy, String sortDirection) {
         Sort sort = sortDirection.equalsIgnoreCase("desc") ?
@@ -60,7 +82,17 @@ public class CharacterServiceImpl implements CharacterService {
         return characterPage.map(this::convertToDTO);
     }
 
-    // Find all characters with search, filter and pagination
+    /**
+     * Searches and filters characters based on provided criteria with pagination.
+     *
+     * @param searchTerm optional term to search for in character fields
+     * @param filter criteria to filter characters
+     * @param page zero-based page index
+     * @param size size of the page to be returned
+     * @param sortBy field to sort by
+     * @param sortDirection direction of sort ("asc" or "desc")
+     * @return filtered and paginated list of characters converted to DTOs
+     */
     @Override
     public Page<ReadCharacter> searchAndFilterCharacters(String searchTerm, FilterCharacter filter, int page, int size, String sortBy, String sortDirection) {
         Sort sort = sortDirection.equalsIgnoreCase("desc") ?
@@ -80,7 +112,13 @@ public class CharacterServiceImpl implements CharacterService {
     }
 
 
-    // Find a character by ID that is not deleted
+    /**
+     * Retrieves a specific character by its ID if it's not deleted.
+     *
+     * @param id the ID of the character to retrieve
+     * @return the character converted to DTO
+     * @throws ResourceNotFoundException if character is not found or is deleted
+     */
     @Override
     public ReadCharacter getCharacterById(Long id) {
         GameCharacter character = characterRepository.findByIdAndIsDeletedFalse(id)
@@ -88,7 +126,13 @@ public class CharacterServiceImpl implements CharacterService {
         return convertToDTO(character);
     }
 
-    // Create a new character from CreateCharacter DTO
+    /**
+     * Creates a new character from the provided data.
+     * Sets default values where necessary.
+     *
+     * @param createRequest DTO containing character creation data
+     * @return the created character converted to DTO
+     */
     @Override
     public ReadCharacter createCharacter(CreateCharacter createRequest) {
         GameCharacter character = new GameCharacter();
@@ -105,21 +149,41 @@ public class CharacterServiceImpl implements CharacterService {
         return convertToDTO(savedCharacter);
     }
 
-    // Create a hero character from CreateCharacter DTO
+    /**
+     * Creates a hero character from the provided data.
+     * Automatically sets the character type to HERO.
+     *
+     * @param createRequest DTO containing character creation data
+     * @return the created hero character converted to DTO
+     */
     @Override
     public ReadCharacter createHero(CreateCharacter createRequest) {
         createRequest.setType(CharacterType.HERO);
         return createCharacter(createRequest);
     }
 
-    // Create a villain character from CreateCharacter DTO
+    /**
+     * Creates a villain character from the provided data.
+     * Automatically sets the character type to VILLAIN.
+     *
+     * @param createRequest DTO containing character creation data
+     * @return the created villain character converted to DTO
+     */
     @Override
     public ReadCharacter createVillain(CreateCharacter createRequest) {
         createRequest.setType(CharacterType.VILLAIN);
         return createCharacter(createRequest);
     }
 
-    // Update an existing character from UpdateCharacter DTO
+    /**
+     * Updates an existing character with new data.
+     * Preserves certain fields like ID and deletion status.
+     *
+     * @param id the ID of the character to update
+     * @param updateRequest DTO containing updated character data
+     * @return the updated character converted to DTO
+     * @throws ResourceNotFoundException if character is not found or is deleted
+     */
     @Override
     public ReadCharacter updateCharacter(Long id, UpdateCharacter updateRequest) {
         GameCharacter existingCharacter = characterRepository.findByIdAndIsDeletedFalse(id)
@@ -130,7 +194,16 @@ public class CharacterServiceImpl implements CharacterService {
         return convertToDTO(updatedCharacter);
     }
 
-    // Update a character's sprite image
+    /**
+     * Updates a character's sprite image.
+     * Deletes the old sprite file if one exists.
+     *
+     * @param id the ID of the character to update
+     * @param file new sprite image file
+     * @return the updated character converted to DTO
+     * @throws ResourceNotFoundException if character is not found or is deleted
+     * @throws InvalidRequestException if the file is null or empty
+     */
     @Override
     public ReadCharacter updateCharacterSprite(Long id, MultipartFile file) {
         GameCharacter character = characterRepository.findByIdAndIsDeletedFalse(id)
@@ -159,7 +232,12 @@ public class CharacterServiceImpl implements CharacterService {
         return convertToDTO(updatedCharacter);
     }
 
-    // Soft delete a character by ID
+    /**
+     * Performs a soft delete on a character (marks as deleted without removing from database).
+     *
+     * @param id the ID of the character to soft delete
+     * @throws ResourceNotFoundException if character is not found or is already deleted
+     */
     @Override
     public void softDeleteCharacter(Long id) {
         GameCharacter character = characterRepository.findByIdAndIsDeletedFalse(id)
@@ -169,7 +247,12 @@ public class CharacterServiceImpl implements CharacterService {
     }
 
 
-    // Hard delete a character by ID
+    /**
+     * Permanently removes a character from the database.
+     *
+     * @param id the ID of the character to hard delete
+     * @throws ResourceNotFoundException if character does not exist
+     */
     @Override
     public void hardDeleteCharacter(Long id) {
         if (characterRepository.existsById(id)) {
@@ -179,7 +262,12 @@ public class CharacterServiceImpl implements CharacterService {
         }
     }
 
-    // Convert Character entity to ReadCharacter DTO
+    /**
+     * Converts a GameCharacter entity to a ReadCharacter DTO.
+     *
+     * @param character the entity to convert
+     * @return the converted DTO
+     */
     public ReadCharacter convertToDTO(GameCharacter character) {
         ReadCharacter dto = new ReadCharacter();
         BeanUtils.copyProperties(character, dto);

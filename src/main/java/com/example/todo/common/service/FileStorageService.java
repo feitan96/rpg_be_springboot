@@ -14,12 +14,20 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
+/**
+ * Service responsible for storing, loading, and deleting files from the file system.
+ */
 @Service
 public class FileStorageService {
 
     private final Path fileStorageLocation;
     private final String uploadDir;
 
+    /**
+     * Constructor to initialize the file storage service with the upload directory.
+     *
+     * @param uploadDir the directory where files will be uploaded
+     */
     public FileStorageService(@Value("${file.upload.directory}") String uploadDir) {
         this.uploadDir = uploadDir;
         this.fileStorageLocation = Paths.get(uploadDir)
@@ -32,13 +40,17 @@ public class FileStorageService {
         }
     }
 
+    /**
+     * Stores the uploaded file in the specified directory with a unique name.
+     *
+     * @param file the file to be stored
+     * @return the name of the stored file
+     */
     public String storeFile(MultipartFile file) {
-        // Normalize file name
         String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
         String fileExtension = "";
 
         try {
-            // Check if the file's name contains invalid characters
             if (originalFileName.contains("..")) {
                 throw new RuntimeException("Sorry! Filename contains invalid path sequence " + originalFileName);
             }
@@ -49,10 +61,8 @@ public class FileStorageService {
                 fileExtension = originalFileName.substring(i);
             }
 
-            // Generate unique file name
             String fileName = UUID.randomUUID().toString() + fileExtension;
 
-            // Copy file to the target location (Replacing existing file with the same name)
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
@@ -62,6 +72,12 @@ public class FileStorageService {
         }
     }
 
+    /**
+     * Loads a file as a resource from the storage location.
+     *
+     * @param fileName the name of the file to be loaded
+     * @return the resource representing the file
+     */
     public Resource loadFileAsResource(String fileName) {
         try {
             Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
@@ -76,6 +92,12 @@ public class FileStorageService {
         }
     }
 
+    /**
+     * Deletes a file from the storage location.
+     *
+     * @param fileName the name of the file to be deleted
+     * @return true if the file was successfully deleted, false otherwise
+     */
     public boolean deleteFile(String fileName) {
         try {
             Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
@@ -85,9 +107,12 @@ public class FileStorageService {
         }
     }
 
+    /**
+     * Returns the resource path for accessing uploaded files.
+     *
+     * @return the URL path for accessing uploaded files
+     */
     public String getResourcePath() {
-        // Return URL path for accessing the uploaded files
-        // When files are in src/main/resources/static/uploads/sprites, they'll be accessible at /uploads/sprites
         return "/uploads/sprites/";
     }
 }

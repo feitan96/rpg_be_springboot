@@ -45,7 +45,7 @@ public class CharacterController {
     @GetMapping("/paginated")
     public ResponseEntity<Page<ReadCharacter>> getAllCharactersPaginated(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "12") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDirection) {
         Page<ReadCharacter> characterPage = characterService.getAllCharactersPaginated(page, size, sortBy, sortDirection);
@@ -58,7 +58,7 @@ public class CharacterController {
             @RequestParam(required = false) String searchTerm,
             @ModelAttribute FilterCharacter filter,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "12") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDirection) {
         try {

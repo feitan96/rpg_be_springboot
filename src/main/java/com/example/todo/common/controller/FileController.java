@@ -41,25 +41,18 @@ public class FileController {
      */
     @PostMapping("/upload")
     public ResponseEntity<Map<String, String>> uploadFile(@RequestParam("file") MultipartFile file) {
-        try {
-            String fileName = fileStorageService.storeFile(file);
+        String fileName = fileStorageService.storeFile(file);
 
-            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                    .path("/api/v1/files/")
-                    .path(fileName)
-                    .toUriString();
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/api/v1/files/")
+                .path(fileName)
+                .toUriString();
 
-            Map<String, String> response = new HashMap<>();
-            response.put("fileName", fileName);
-            response.put("fileUrl", fileDownloadUri);
+        Map<String, String> response = new HashMap<>();
+        response.put("fileName", fileName);
+        response.put("fileUrl", fileDownloadUri);
 
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException ex) {
-            logger.error("Failed to upload file: {}", ex.getMessage(), ex);
-            Map<String, String> errorResponse = new HashMap<>();
-            errorResponse.put("error", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        }
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -71,30 +64,24 @@ public class FileController {
      */
     @GetMapping("/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
+        Resource resource = fileStorageService.loadFileAsResource(fileName);
+
+        String contentType = null;
         try {
-            Resource resource = fileStorageService.loadFileAsResource(fileName);
-
-            // Try to determine file's content type
-            String contentType = null;
-            try {
-                contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-            } catch (IOException ex) {
-                logger.info("Could not determine file type for: {}", fileName, ex);
-            }
-
-            // Fallback to the default content type if type could not be determined
-            if(contentType == null) {
-                contentType = "application/octet-stream";
-            }
-
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(contentType))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
-                    .body(resource);
-        } catch (RuntimeException ex) {
-            logger.error("Failed to download file: {}", ex.getMessage(), ex);
-            return ResponseEntity.notFound().build();
+            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+         } catch (IOException ex) {
+            logger.info("Could not determine file type for: {}", fileName, ex);
         }
+
+        // Fallback to the default content type if type could not be determined
+        if(contentType == null) {
+            contentType = "application/octet-stream";
+        }
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
     }
 
     /**
@@ -105,20 +92,12 @@ public class FileController {
      */
     @DeleteMapping("/{fileName:.+}")
     public ResponseEntity<Map<String, Object>> deleteFile(@PathVariable String fileName) {
-        try {
-            boolean deleted = fileStorageService.deleteFile(fileName);
+        boolean deleted = fileStorageService.deleteFile(fileName);
 
-            Map<String, Object> response = new HashMap<>();
-            response.put("deleted", deleted);
-            response.put("fileName", fileName);
+        Map<String, Object> response = new HashMap<>();
+        response.put("deleted", deleted);
+        response.put("fileName", fileName);
 
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException ex) {
-            logger.error("Failed to delete file: {}", ex.getMessage(), ex);
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("deleted", false);
-            errorResponse.put("error", ex.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
-        }
+        return ResponseEntity.ok(response);
     }
 }

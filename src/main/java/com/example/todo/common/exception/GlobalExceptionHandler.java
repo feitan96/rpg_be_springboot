@@ -70,4 +70,32 @@ public class GlobalExceptionHandler {
                 "An unexpected error occurred. Please try again later."),
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    /**
+     * Handles file operation exceptions.
+     *
+     * @param ex the exception
+     * @return 500 INTERNAL SERVER ERROR with error details
+     */
+    @ExceptionHandler(FileOperationException.class)
+    public ResponseEntity<ErrorResponse> handleFileOperationException(FileOperationException ex) {
+        log.error("File operation error: {}", ex.getMessage());
+        return new ResponseEntity<>(new ErrorResponse("File operation error",
+                "An error occurred during file operation"),
+                HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * Handles standard Java IO exceptions.
+     *
+     * @param ex the exception
+     * @return 500 INTERNAL SERVER ERROR with error details
+     */
+    @ExceptionHandler(java.io.IOException.class)
+    public ResponseEntity<ErrorResponse> handleIOException(java.io.IOException ex) {
+        log.error("IO operation error: {}", ex.getMessage());
+        return new ResponseEntity<>(new ErrorResponse("IO error",
+                "An error occurred during IO operation"),
+                HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

@@ -1,5 +1,8 @@
 package com.example.todo.common.service;
 
+import com.example.todo.common.exception.FileOperationException;
+import com.example.todo.common.exception.InvalidRequestException;
+import com.example.todo.common.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -52,7 +55,7 @@ public class FileStorageService {
 
         try {
             if (originalFileName.contains("..")) {
-                throw new RuntimeException("Sorry! Filename contains invalid path sequence " + originalFileName);
+                throw new InvalidRequestException("Sorry! Filename contains invalid path sequence " + originalFileName);
             }
 
             // Get file extension
@@ -68,7 +71,7 @@ public class FileStorageService {
 
             return fileName;
         } catch (IOException ex) {
-            throw new RuntimeException("Could not store file " + originalFileName + ". Please try again!", ex);
+            throw new FileOperationException("Could not store file " + originalFileName + ". Please try again!", ex);
         }
     }
 
@@ -85,10 +88,10 @@ public class FileStorageService {
             if (resource.exists()) {
                 return resource;
             } else {
-                throw new RuntimeException("File not found " + fileName);
+                throw new ResourceNotFoundException("File not found " + fileName);
             }
         } catch (IOException ex) {
-            throw new RuntimeException("File not found " + fileName, ex);
+            throw new FileOperationException("File not found " + fileName, ex);
         }
     }
 
@@ -103,7 +106,7 @@ public class FileStorageService {
             Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
             return Files.deleteIfExists(filePath);
         } catch (IOException ex) {
-            throw new RuntimeException("Could not delete file " + fileName, ex);
+            throw new FileOperationException("Could not delete file " + fileName, ex);
         }
     }
 
